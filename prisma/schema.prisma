@@ -54,3 +54,10 @@ model File {
 
   @@unique([name, folderId])
 }
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+}
