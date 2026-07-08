@@ -8,4 +8,11 @@ declare global {
   }
 }
 
+declare module "express-session" {
+  interface SessionData {
+    messages?: string[];
+    formData?: { email?: string };
+  }
+}
+
 export {};

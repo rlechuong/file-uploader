@@ -31,4 +31,30 @@ const postSignup = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { getSignup, postSignup };
+const getLogin = (req: Request, res: Response) => {
+  const messages = req.session.messages ?? [];
+  const formData = req.session.formData ?? {};
+  req.session.messages = [];
+  req.session.formData = {};
+
+  res.render("login", { errors: messages, formData });
+};
+
+const postLogout = (req: Request, res: Response, next: NextFunction) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+
+    req.session.destroy((err) => {
+      if (err) {
+        return next(err);
+      }
+
+      res.clearCookie("connect.sid", { path: "/" });
+      return res.redirect("/");
+    });
+  });
+};
+
+export { getSignup, postSignup, getLogin, postLogout };
