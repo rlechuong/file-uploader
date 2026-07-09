@@ -1,0 +1,34 @@
+<%- include("partials/header.ejs") %>
+
+<% if (errors.length > 0) { %>
+  <ul>
+    <% errors.forEach(error => { %>
+      <li><%= error.msg %></li>
+    <% }) %>
+  </ul>
+<% } %>
+
+<form action="<%= folder.id ? `/folders/${folder.id}/folders` : `/folders` %>" method="POST">
+  <label for="name">Folder Name</label>
+  <input id="name" name="name" type="text" required />
+  <button type="submit">Create Folder</button>
+</form>
+
+<% if (folder.id) { %>
+  <h2><%= folder.name %></h2>
+<% } else { %>
+  <h2>Root</h2>
+<% } %>
+
+<ul>
+<% folder.subfolders.forEach(subfolder => { %>
+  <li>
+    <a href="/folders/<%= subfolder.id %>"><%= subfolder.name %></a>
+  </li>
+<% }) %>
+</ul>
+<% if (folder.id) { %>
+  <a href="<%= folder.parentId ? `/folders/${folder.parentId}` : '/folders' %>">Back</a>
+<% } %>
+
+<%- include("partials/footer.ejs") %>

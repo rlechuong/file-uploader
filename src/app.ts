@@ -6,6 +6,7 @@ import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import passport from "passport";
 import { prisma } from "./config/prisma.js";
 import { authRouter } from "./routes/authRoutes.js";
+import { folderRouter } from "./routes/folderRoutes.js";
 
 import "./config/passport.js";
 
@@ -46,6 +47,8 @@ app.use((req, res, next) => {
 });
 
 app.use("/", authRouter);
+
+app.use("/", folderRouter);
 
 app.get("/", (req, res) => {
   res.send(req.user ? `Logged In As: ${req.user.email}` : "Not Logged In.");
