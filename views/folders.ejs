@@ -24,6 +24,9 @@
 <% if (folder.id) { %>
   <h2><%= folder.name %></h2>
   <button data-action="open-rename">Rename Folder</button>
+  <form action="/folders/<%= folder.id %>/delete" method="POST" 
+    onsubmit="return confirm('Delete this folder and everything inside of it?')">
+    <button type="submit">Delete Folder</button></form>
 <% } else { %>
   <h2>Root</h2>
 <% } %>

@@ -6,6 +6,7 @@ import {
   findFolderAndContents,
   findRootFolderContents,
   updateFolder,
+  deleteFolder,
 } from "../queries/folderQueries.js";
 
 const renderFolderView = async (
@@ -104,4 +105,33 @@ const postRenameFolder = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
-export { getFolderAndContents, postCreateFolder, postRenameFolder };
+const postDeleteFolder = async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.user) {
+    return res.status(401).send("Not authenticated.");
+  }
+
+  const folderId = req.params.id;
+
+  if (typeof folderId !== "string") {
+    return res.status(400).send("Invalid Folder ID.");
+  }
+
+  try {
+    const folder = await findFolderById(folderId);
+
+    if (!folder) {
+      return res.status(404).send("Folder not found.");
+    }
+
+    if (folder.userId !== req.user.id) {
+      return res.status(403).send("You do not have access to this folder.");
+    }
+
+    await deleteFolder(folderId);
+    return res.redirect(folder.parentId ? `/folders/${folder.parentId}` : "/folders");
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export { getFolderAndContents, postCreateFolder, postRenameFolder, postDeleteFolder };
