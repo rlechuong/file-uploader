@@ -2,8 +2,10 @@ import { validationResult, matchedData } from "express-validator";
 import type { Request, Response, NextFunction } from "express";
 import {
   createFolder,
+  findFolderById,
   findFolderAndContents,
   findRootFolderContents,
+  updateFolder,
 } from "../queries/folderQueries.js";
 
 const renderFolderView = async (
@@ -66,4 +68,40 @@ const postCreateFolder = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
-export { getFolderAndContents, postCreateFolder };
+const postRenameFolder = async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.user) {
+    return res.status(401).send("Not authenticated.");
+  }
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400);
+    return renderFolderView(req, res, next, errors.array());
+  }
+
+  const { name } = matchedData(req);
+  const folderId = req.params.id;
+
+  if (typeof folderId !== "string") {
+    return res.status(400).send("Invalid Folder ID.");
+  }
+
+  try {
+    const folder = await findFolderById(folderId);
+
+    if (!folder) {
+      return res.status(404).send("Folder not found.");
+    }
+
+    if (folder.userId !== req.user.id) {
+      return res.status(403).send("You do not have access to this folder.");
+    }
+
+    await updateFolder(folderId, name);
+    return res.redirect(`/folders/${folderId}`);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export { getFolderAndContents, postCreateFolder, postRenameFolder };

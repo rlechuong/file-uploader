@@ -8,16 +8,37 @@
   </ul>
 <% } %>
 
-<form action="<%= folder.id ? `/folders/${folder.id}/folders` : `/folders` %>" method="POST">
-  <label for="name">Folder Name</label>
-  <input id="name" name="name" type="text" required />
-  <button type="submit">Create Folder</button>
-</form>
+<button data-action="open-create">New Folder</button>
+
+<dialog id="createDialog">
+  <form action="<%= folder.id ? `/folders/${folder.id}/folders` : `/folders` %>" method="POST">
+    <h3>New Folder</h3>
+    <label for="create-name">Folder Name</label>
+    <input id="create-name" name="name" type="text" required />
+
+    <button type="submit">Create</button>
+    <button type="button" data-action="cancel-create">Cancel</button>
+  </form>
+</dialog>
 
 <% if (folder.id) { %>
   <h2><%= folder.name %></h2>
+  <button data-action="open-rename">Rename Folder</button>
 <% } else { %>
   <h2>Root</h2>
+<% } %>
+
+<% if (folder.id) { %>
+  <dialog id="renameDialog">
+    <form action="/folders/<%= folder.id %>/rename" method="POST">
+      <h3>Rename Folder</h3>
+      <label for="rename-name">Folder Name</label>
+      <input id="rename-name" name="name" type="text" value="<%= folder.name %>" required />
+
+      <button type="submit">Save</button>
+      <button type="button" data-action="cancel-rename">Cancel</button>
+    </form>
+  </dialog>
 <% } %>
 
 <ul>
