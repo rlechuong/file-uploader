@@ -7,6 +7,7 @@ import passport from "passport";
 import { prisma } from "./config/prisma.js";
 import { authRouter } from "./routes/authRoutes.js";
 import { folderRouter } from "./routes/folderRoutes.js";
+import { fileRouter } from "./routes/fileRoutes.js";
 
 import "./config/passport.js";
 
@@ -50,8 +51,10 @@ app.use("/", authRouter);
 
 app.use("/", folderRouter);
 
+app.use("/", fileRouter);
+
 app.get("/", (req, res) => {
-  res.send(req.user ? `Logged In As: ${req.user.email}` : "Not Logged In.");
+  res.redirect("/folders");
 });
 
 app.listen(PORT, () => {

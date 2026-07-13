@@ -1,15 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const createButton = document.querySelector('[data-action="open-create"]');
-  const createDialog = document.querySelector("#createDialog");
-  const createCancel = document.querySelector('[data-action="cancel-create"]');
+  const modals = ["create", "rename", "upload"];
 
-  createButton?.addEventListener("click", () => createDialog?.showModal());
-  createCancel?.addEventListener("click", () => createDialog?.close());
+  modals.forEach((name) => {
+    const openButton = document.querySelector(`[data-action="open-${name}"]`);
+    const dialog = document.querySelector(`#${name}Dialog`);
+    const cancelButton = document.querySelector(`[data-action="cancel-${name}"]`);
 
-  const renameButton = document.querySelector('[data-action="open-rename"]');
-  const renameDialog = document.querySelector("#renameDialog");
-  const renameCancel = document.querySelector('[data-action="cancel-rename"]');
-
-  renameButton?.addEventListener("click", () => renameDialog?.showModal());
-  renameCancel?.addEventListener("click", () => renameDialog?.close());
+    openButton?.addEventListener("click", () => dialog?.showModal());
+    cancelButton?.addEventListener("click", () => dialog?.close());
+  });
 });

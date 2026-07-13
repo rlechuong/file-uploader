@@ -21,6 +21,19 @@
   </form>
 </dialog>
 
+<button data-action="open-upload">Upload File</button>
+
+<dialog id="uploadDialog">
+  <form action="<%= folder.id ? `/folders/${folder.id}/files` : `/files` %>" method="POST" 
+    enctype="multipart/form-data">
+    <h3>Upload File</h3>
+    <label for="file">Upload File</label>
+    <input id="file" name="file" type="file" required />
+    <button type="submit">Upload</button>
+    <button type="button" data-action="cancel-upload">Cancel</button>
+  </form>
+</dialog>
+
 <% if (folder.id) { %>
   <h2><%= folder.name %></h2>
   <button data-action="open-rename">Rename Folder</button>
