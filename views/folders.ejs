@@ -57,6 +57,7 @@
   </dialog>
 <% } %>
 
+<h3>Folders</h3>
 <ul>
 <% folder.subfolders.forEach(subfolder => { %>
   <li>
@@ -64,6 +65,16 @@
   </li>
 <% }) %>
 </ul>
+
+<h3>Files</h3>
+<ul>
+<% folder.files.forEach(file => { %>
+  <li>
+    <a href="/files/<%= file.id %>"><%= file.name %></a>
+  </li>
+<% }) %>
+</ul>
+
 <% if (folder.id) { %>
   <a href="<%= folder.parentId ? `/folders/${folder.parentId}` : '/folders' %>">Back</a>
 <% } %>

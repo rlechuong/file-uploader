@@ -1,0 +1,12 @@
+<%- include("partials/header.ejs") %>
+
+<h2><%= file.name %></h2>
+
+<p>Size: <%= formattedSize %></p>
+<p>Type: <%= file.mimeType %></p>
+<p>Uploaded: <%= formattedCreatedDate %></p>
+<p>Updated: <%= formattedUpdatedDate %></p>
+
+<a href="<%= file.folderId ? `/folders/${file.folderId}` : `/folders` %>">Back</a>
+
+<%- include("partials/footer.ejs") %>
