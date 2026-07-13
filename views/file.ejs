@@ -7,6 +7,8 @@
 <p>Uploaded: <%= formattedCreatedDate %></p>
 <p>Updated: <%= formattedUpdatedDate %></p>
 
+<a href="/files/<%= file.id %>/download">Download</a>
+
 <a href="<%= file.folderId ? `/folders/${file.folderId}` : `/folders` %>">Back</a>
 
 <%- include("partials/footer.ejs") %>

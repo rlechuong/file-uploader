@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import crypto from "node:crypto";
+import path from "node:path";
 import { createFile, findFileById } from "../queries/fileQueries.js";
 import { formatDate, formatFileSize } from "../utils/formatters.js";
 
@@ -58,11 +59,37 @@ const getFile = async (req: Request, res: Response, next: NextFunction) => {
       file,
       formattedSize: formatFileSize(file.size),
       formattedCreatedDate: formatDate(file.createdAt),
-      formattedUpdatedDate: formatDate(file.updatedAt)
+      formattedUpdatedDate: formatDate(file.updatedAt),
     });
   } catch (err) {
     return next(err);
   }
 };
 
-export { postFileUpload, getFile };
+const getFileDownload = async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.user) {
+    return res.status(401).send("Not authenticated.");
+  }
+
+  const fileId = req.params.id;
+  if (typeof fileId !== "string") {
+    return res.status(400).send("Invalid File ID.");
+  }
+
+  try {
+    const file = await findFileById(fileId);
+    if (!file) {
+      return res.status(404).send("File not found.");
+    }
+
+    if (file.userId !== req.user.id) {
+      return res.status(403).send("You do not have access to this file.");
+    }
+
+    return res.download(path.join("uploads", file.storageKey), file.name);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export { postFileUpload, getFile, getFileDownload };
