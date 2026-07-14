@@ -38,14 +38,15 @@ model Folder {
 }
 
 model File {
-  id         String   @id @default(uuid())
-  name       String
-  storageKey String   @unique
-  mimeType   String
-  size       BigInt
-  url        String
-  createdAt  DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt  DateTime @updatedAt @db.Timestamptz(3)
+  id           String   @id @default(uuid())
+  name         String
+  storageKey   String   @unique
+  mimeType     String
+  resourceType String
+  size         BigInt
+  url          String
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
 
   userId   String
   user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
