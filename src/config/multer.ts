@@ -1,6 +1,4 @@
 import multer from "multer";
-import crypto from "node:crypto";
-import path from "node:path";
 import type { Request } from "express";
 
 const ALLOWED_MIME_TYPES = [
@@ -18,15 +16,7 @@ const ALLOWED_MIME_TYPES = [
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    const storageKey = crypto.randomUUID() + path.extname(file.originalname);
-    cb(null, storageKey);
-  },
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {

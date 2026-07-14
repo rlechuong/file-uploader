@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import path from "node:path";
 import { createFile, deleteFile, findFileById } from "../queries/fileQueries.js";
 import { formatDate, formatFileSize } from "../utils/formatters.js";
+import { streamUpload } from "../config/cloudinary.js";
 
 const postFileUpload = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
@@ -16,18 +17,20 @@ const postFileUpload = async (req: Request, res: Response, next: NextFunction) =
   const folderId = typeof req.params.id === "string" ? req.params.id : null;
   const fileId = crypto.randomUUID();
 
-  const fileData = {
-    id: fileId,
-    name: req.file.originalname,
-    storageKey: req.file.filename,
-    mimeType: req.file.mimetype,
-    size: BigInt(req.file.size),
-    url: `/files/${fileId}/download`,
-    userId: req.user.id,
-    folderId,
-  };
-
   try {
+    const uploadResult = await streamUpload(req.file.buffer);
+
+    const fileData = {
+      id: fileId,
+      name: req.file.originalname,
+      storageKey: uploadResult.public_id,
+      mimeType: req.file.mimetype,
+      size: BigInt(req.file.size),
+      url: uploadResult.secure_url,
+      userId: req.user.id,
+      folderId,
+    };
+
     await createFile(fileData);
     return res.redirect(folderId ? `/folders/${folderId}` : "/folders");
   } catch (err) {
