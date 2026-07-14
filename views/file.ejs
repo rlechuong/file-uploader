@@ -9,6 +9,11 @@
 
 <a href="/files/<%= file.id %>/download">Download</a>
 
+<form action="/files/<%= file.id %>/delete" method="POST"
+  onsubmit="return confirm(`Delete this file?`)">
+  <button type="submit">Delete File</button>
+</form>
+
 <a href="<%= file.folderId ? `/folders/${file.folderId}` : `/folders` %>">Back</a>
 
 <%- include("partials/footer.ejs") %>

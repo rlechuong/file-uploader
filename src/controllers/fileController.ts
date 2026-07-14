@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import crypto from "node:crypto";
 import path from "node:path";
-import { createFile, findFileById } from "../queries/fileQueries.js";
+import { createFile, deleteFile, findFileById } from "../queries/fileQueries.js";
 import { formatDate, formatFileSize } from "../utils/formatters.js";
 
 const postFileUpload = async (req: Request, res: Response, next: NextFunction) => {
@@ -92,4 +92,31 @@ const getFileDownload = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-export { postFileUpload, getFile, getFileDownload };
+const postDeleteFile = async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.user) {
+    return res.status(401).send("Not authenticated.");
+  }
+
+  const fileId = req.params.id;
+  if (typeof fileId !== "string") {
+    return res.status(400).send("Invalid File ID.");
+  }
+
+  try {
+    const file = await findFileById(fileId);
+    if (!file) {
+      return res.status(404).send("File not found.");
+    }
+
+    if (file.userId !== req.user.id) {
+      return res.status(403).send("You do not have access to this file.");
+    }
+
+    await deleteFile(fileId);
+    return res.redirect(file.folderId ? `/folders/${file.folderId}` : "/folders");
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export { postFileUpload, getFile, getFileDownload, postDeleteFile };

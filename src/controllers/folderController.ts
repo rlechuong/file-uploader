@@ -19,6 +19,11 @@ const renderFolderView = async (
     return res.status(401).send("Not authenticated.");
   }
 
+  const sessionMessages = req.session.messages ?? [];
+  req.session.messages = [];
+  const normalizedSessionMessages = sessionMessages.map((message) => ({ msg: message }));
+  const allErrors = [...errors, ...normalizedSessionMessages];
+
   const folderId = req.params.id;
 
   try {
@@ -33,11 +38,11 @@ const renderFolderView = async (
         return res.status(403).send("You do not have access to this folder.");
       }
 
-      return res.render("folders", { folder, errors });
+      return res.render("folders", { folder, allErrors });
     }
 
     const folder = await findRootFolderContents(req.user.id);
-    return res.render("folders", { folder, errors });
+    return res.render("folders", { folder, allErrors });
   } catch (err) {
     return next(err);
   }

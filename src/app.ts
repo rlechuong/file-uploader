@@ -8,6 +8,7 @@ import { prisma } from "./config/prisma.js";
 import { authRouter } from "./routes/authRoutes.js";
 import { folderRouter } from "./routes/folderRoutes.js";
 import { fileRouter } from "./routes/fileRoutes.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 import "./config/passport.js";
 
@@ -56,6 +57,8 @@ app.use("/", fileRouter);
 app.get("/", (req, res) => {
   res.redirect("/folders");
 });
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server Listening On Port ${PORT}`);
