@@ -19,4 +19,15 @@ const formatDate = (date: Date): string => {
   });
 };
 
-export { formatFileSize, formatDate };
+const sanitizeForUrl = (filename: string): string => {
+  const slug = filename
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/[^a-z0-9.-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return encodeURIComponent(slug);
+};
+
+export { formatFileSize, formatDate, sanitizeForUrl };

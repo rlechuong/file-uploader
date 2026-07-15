@@ -1,12 +1,12 @@
 import { prisma } from "../config/prisma.js";
-import fs from "node:fs/promises";
-import path from "node:path";
+import { cloudinary } from "../config/cloudinary.js";
 
 type CreateFileInput = {
   id?: string;
   name: string;
   storageKey: string;
   mimeType: string;
+  resourceType: string;
   size: bigint;
   url: string;
   userId: string;
@@ -20,6 +20,7 @@ const createFile = async (fileData: CreateFileInput) => {
       name: fileData.name,
       storageKey: fileData.storageKey,
       mimeType: fileData.mimeType,
+      resourceType: fileData.resourceType,
       size: fileData.size,
       url: fileData.url,
       user: { connect: { id: fileData.userId } },
@@ -52,7 +53,7 @@ const deleteFile = async (id: string) => {
 
   if (!file) return null;
 
-  await fs.unlink(path.join("uploads", file.storageKey));
+  await cloudinary.uploader.destroy(file.storageKey, { resource_type: file.resourceType });
 
   const deletedFile = await prisma.file.delete({ where: { id } });
 

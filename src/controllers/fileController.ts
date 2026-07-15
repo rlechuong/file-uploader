@@ -2,8 +2,8 @@ import type { Request, Response, NextFunction } from "express";
 import crypto from "node:crypto";
 import path from "node:path";
 import { createFile, deleteFile, findFileById } from "../queries/fileQueries.js";
-import { formatDate, formatFileSize } from "../utils/formatters.js";
-import { streamUpload } from "../config/cloudinary.js";
+import { formatDate, formatFileSize, sanitizeForUrl } from "../utils/formatters.js";
+import { cloudinary, streamUpload } from "../config/cloudinary.js";
 
 const postFileUpload = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
@@ -25,6 +25,7 @@ const postFileUpload = async (req: Request, res: Response, next: NextFunction) =
       name: req.file.originalname,
       storageKey: uploadResult.public_id,
       mimeType: req.file.mimetype,
+      resourceType: uploadResult.resource_type,
       size: BigInt(req.file.size),
       url: uploadResult.secure_url,
       userId: req.user.id,
@@ -89,7 +90,16 @@ const getFileDownload = async (req: Request, res: Response, next: NextFunction) 
       return res.status(403).send("You do not have access to this file.");
     }
 
-    return res.download(path.join("uploads", file.storageKey), file.name);
+    const extension = path.extname(file.name);
+    const nameWithoutExtension = path.basename(file.name, extension);
+    const safeName = sanitizeForUrl(nameWithoutExtension);
+
+    const downloadUrl = cloudinary.url(file.storageKey, {
+      resource_type: file.resourceType,
+      flags: `attachment:${safeName}`,
+    });
+
+    return res.redirect(downloadUrl);
   } catch (err) {
     return next(err);
   }
