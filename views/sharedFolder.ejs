@@ -1,0 +1,27 @@
+<%- include("partials/header.ejs") %>
+
+<h2><%= folder.name %></h2>
+
+<h3>Folders</h3>
+<ul>
+<% folder.subfolders.forEach(subfolder => { %>
+  <li>
+    <a href="/shared/<%= sharedToken %>/<%= subfolder.id %>"><%= subfolder.name %></a>
+  </li>
+<% }) %>
+</ul>
+
+<h3>Files</h3>
+<ul>
+<% folder.files.forEach(file => { %>
+  <li>
+    <a href="/shared/<%= sharedToken %>/files/<%= file.id %>/download"><%= file.name %></a>
+  </li>
+<% }) %>
+</ul>
+
+<% if (folder.id !== sharedRootFolderId) { %>
+  <a href="/shared/<%= sharedToken %>/<%= folder.parentId %>">Back</a>
+<% } %>
+
+<%- include("partials/footer.ejs") %>

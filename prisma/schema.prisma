@@ -21,11 +21,12 @@ model User {
 }
 
 model Folder {
-  id        String   @id @default(uuid())
-  name      String
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
-  files     File[]
+  id         String      @id @default(uuid())
+  name       String
+  createdAt  DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime    @updatedAt @db.Timestamptz(3)
+  files      File[]
+  shareLinks ShareLink[]
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -54,6 +55,15 @@ model File {
   folder   Folder? @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
   @@unique([name, folderId])
+}
+
+model ShareLink {
+  id        String   @id @default(uuid())
+  token     String   @unique @default(uuid())
+  folderId  String
+  folder    Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  expiresAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
 }
 
 model Session {

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const modals = ["create", "rename", "upload"];
+  const modals = ["create", "rename", "upload", "share"];
 
   modals.forEach((name) => {
     const openButton = document.querySelector(`[data-action="open-${name}"]`);
@@ -8,5 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     openButton?.addEventListener("click", () => dialog?.showModal());
     cancelButton?.addEventListener("click", () => dialog?.close());
+  });
+
+  document.querySelectorAll("dialog[data-open='true']").forEach((dialog) => {
+    dialog.showModal();
   });
 });

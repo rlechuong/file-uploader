@@ -37,6 +37,7 @@
 <% if (folder.id) { %>
   <h2><%= folder.name %></h2>
   <button data-action="open-rename">Rename Folder</button>
+  <button data-action="open-share">Share Folder</button>
   <form action="/folders/<%= folder.id %>/delete" method="POST" 
     onsubmit="return confirm('Delete this folder and everything inside of it?')">
     <button type="submit">Delete Folder</button>
@@ -55,6 +56,27 @@
       <button type="submit">Save</button>
       <button type="button" data-action="cancel-rename">Cancel</button>
     </form>
+  </dialog>
+<% } %>
+
+<% if (folder.id) { %>
+  <dialog id="shareDialog" <% if (shareLink) { %> data-open="true" <% } %>>
+    <form action="/folders/<%= folder.id %>/share" method="POST">
+      <h3>Share Folder</h3>
+      <label for="shareLinkDuration">Link Expires In</label>
+      <select id="shareLinkDuration" name="shareLinkDuration">
+        <option value="1h">1 Hour</option>
+        <option value="1d">1 Day</option>
+        <option value="1w">1 Week</option>
+      </select>
+
+      <button type="submit">Create Link</button>
+      <button type="button" data-action="cancel-share">Cancel</button>
+    </form>
+
+    <% if (shareLink) { %>
+      <p>Share Link: <a href="/shared/<%= shareLink.token %>"><%= shareLink.token %></a></p>
+    <% } %>
   </dialog>
 <% } %>
 

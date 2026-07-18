@@ -14,6 +14,7 @@ const renderFolderView = async (
   res: Response,
   next: NextFunction,
   errors: unknown[] = [],
+  shareLink: { token: string } | null = null,
 ) => {
   if (!req.user) {
     return res.status(401).send("Not authenticated.");
@@ -38,11 +39,11 @@ const renderFolderView = async (
         return res.status(403).send("You do not have access to this folder.");
       }
 
-      return res.render("folders", { folder, allErrors });
+      return res.render("folders", { folder, allErrors, shareLink });
     }
 
     const folder = await findRootFolderContents(req.user.id);
-    return res.render("folders", { folder, allErrors });
+    return res.render("folders", { folder, allErrors, shareLink });
   } catch (err) {
     return next(err);
   }
@@ -139,4 +140,10 @@ const postDeleteFolder = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
-export { getFolderAndContents, postCreateFolder, postRenameFolder, postDeleteFolder };
+export {
+  renderFolderView,
+  getFolderAndContents,
+  postCreateFolder,
+  postRenameFolder,
+  postDeleteFolder,
+};

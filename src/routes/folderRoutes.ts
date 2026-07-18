@@ -7,6 +7,7 @@ import {
 } from "../controllers/folderController.js";
 import { requireAuth } from "../middleware/requireAuth.js";
 import { createFolderValidators, renameFolderValidators } from "../validators/folderValidators.js";
+import { postCreateShareLink } from "../controllers/shareLinkController.js";
 
 const folderRouter = Router();
 
@@ -17,5 +18,6 @@ folderRouter.post("/folders", requireAuth, createFolderValidators, postCreateFol
 folderRouter.post("/folders/:id/folders", requireAuth, createFolderValidators, postCreateFolder);
 folderRouter.post("/folders/:id/rename", requireAuth, renameFolderValidators, postRenameFolder);
 folderRouter.post("/folders/:id/delete", requireAuth, postDeleteFolder);
+folderRouter.post("/folders/:id/share", requireAuth, postCreateShareLink);
 
 export { folderRouter };

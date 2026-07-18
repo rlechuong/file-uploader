@@ -73,6 +73,25 @@ const deleteFolder = async (id: string) => {
   return folder;
 };
 
+const isDescendantOf = async (folderId: string, ancestorId: string): Promise<boolean> => {
+  let currentFolderId: string | null = folderId;
+
+  while (currentFolderId !== null) {
+    if (currentFolderId === ancestorId) {
+      return true;
+    }
+
+    const currentFolder = await findFolderById(currentFolderId);
+    if (!currentFolder) {
+      return false;
+    }
+
+    currentFolderId = currentFolder.parentId;
+  }
+
+  return false;
+};
+
 export {
   createFolder,
   findFolderById,
@@ -81,4 +100,5 @@ export {
   findSiblingFolderByName,
   updateFolder,
   deleteFolder,
+  isDescendantOf,
 };
