@@ -8,6 +8,7 @@ import {
   updateFolder,
   deleteFolder,
 } from "../queries/folderQueries.js";
+import { renderError } from "../utils/errors.js";
 
 const renderFolderView = async (
   req: Request,
@@ -17,7 +18,7 @@ const renderFolderView = async (
   shareLink: { token: string } | null = null,
 ) => {
   if (!req.user) {
-    return res.status(401).send("Not authenticated.");
+    return renderError(res, 401, "Not authenticated.");
   }
 
   const sessionMessages = req.session.messages ?? [];
@@ -32,11 +33,11 @@ const renderFolderView = async (
       const folder = await findFolderAndContents(folderId);
 
       if (!folder) {
-        return res.status(404).send("Folder not found.");
+        return renderError(res, 404, "Folder not found.");
       }
 
       if (folder.userId !== req.user.id) {
-        return res.status(403).send("You do not have access to this folder.");
+        return renderError(res, 403, "You do not have access to this folder.");
       }
 
       return res.render("folders", { folder, allErrors, shareLink });
@@ -55,7 +56,7 @@ const getFolderAndContents = async (req: Request, res: Response, next: NextFunct
 
 const postCreateFolder = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
-    return res.status(401).send("Not authenticated.");
+    return renderError(res, 401, "Not authenticated.");
   }
 
   const errors = validationResult(req);
@@ -77,7 +78,7 @@ const postCreateFolder = async (req: Request, res: Response, next: NextFunction)
 
 const postRenameFolder = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
-    return res.status(401).send("Not authenticated.");
+    return renderError(res, 401, "Not authenticated.");
   }
 
   const errors = validationResult(req);
@@ -90,18 +91,18 @@ const postRenameFolder = async (req: Request, res: Response, next: NextFunction)
   const folderId = req.params.id;
 
   if (typeof folderId !== "string") {
-    return res.status(400).send("Invalid Folder ID.");
+    return renderError(res, 400, "Invalid Folder ID.");
   }
 
   try {
     const folder = await findFolderById(folderId);
 
     if (!folder) {
-      return res.status(404).send("Folder not found.");
+      return renderError(res, 404, "Folder not found.");
     }
 
     if (folder.userId !== req.user.id) {
-      return res.status(403).send("You do not have access to this folder.");
+      return renderError(res, 403, "You do not have access to this folder.");
     }
 
     await updateFolder(folderId, name);
@@ -113,24 +114,24 @@ const postRenameFolder = async (req: Request, res: Response, next: NextFunction)
 
 const postDeleteFolder = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
-    return res.status(401).send("Not authenticated.");
+    return renderError(res, 401, "Not authenticated.");
   }
 
   const folderId = req.params.id;
 
   if (typeof folderId !== "string") {
-    return res.status(400).send("Invalid Folder ID.");
+    return renderError(res, 400, "Invalid Folder ID.");
   }
 
   try {
     const folder = await findFolderById(folderId);
 
     if (!folder) {
-      return res.status(404).send("Folder not found.");
+      return renderError(res, 404, "Folder not found.");
     }
 
     if (folder.userId !== req.user.id) {
-      return res.status(403).send("You do not have access to this folder.");
+      return renderError(res, 403, "You do not have access to this folder.");
     }
 
     await deleteFolder(folderId);

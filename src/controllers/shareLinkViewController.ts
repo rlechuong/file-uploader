@@ -5,21 +5,22 @@ import { findFolderAndContents, isDescendantOf } from "../queries/folderQueries.
 import { findFileById } from "../queries/fileQueries.js";
 import { sanitizeForUrl } from "../utils/formatters.js";
 import { cloudinary } from "../config/cloudinary.js";
+import { renderError } from "../utils/errors.js";
 
 const getSharedView = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.params.token;
   if (typeof token !== "string") {
-    return res.status(400).send("Invalid share link token.");
+    return renderError(res, 400, "Invalid share link token.");
   }
 
   try {
     const shareLink = await findShareLinkByToken(token);
     if (!shareLink) {
-      return res.status(404).send("Share link not found.");
+      return renderError(res, 404, "Share link not found.");
     }
 
     if (shareLink.expiresAt < new Date()) {
-      return res.status(410).send("This link has expired.");
+      return renderError(res, 410, "This link has expired.");
     }
 
     const requestedFolderId =
@@ -28,13 +29,13 @@ const getSharedView = async (req: Request, res: Response, next: NextFunction) =>
     if (req.params.id) {
       const isAllowed = await isDescendantOf(requestedFolderId, shareLink.folderId);
       if (!isAllowed) {
-        return res.status(403).send("You do not have access to this folder.");
+        return renderError(res, 403, "You do not have access to this folder.");
       }
     }
 
     const folder = await findFolderAndContents(requestedFolderId);
     if (!folder) {
-      return res.status(404).send("Folder not found.");
+      return renderError(res, 404, "Folder not found.");
     }
     return res.render("sharedFolder", {
       folder,
@@ -49,34 +50,34 @@ const getSharedView = async (req: Request, res: Response, next: NextFunction) =>
 const getSharedFileDownload = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.params.token;
   if (typeof token !== "string") {
-    return res.status(400).send("Invalid share link token.");
+    return renderError(res, 400, "Invalid share link token.");
   }
 
   const fileId = req.params.fileId;
   if (typeof fileId !== "string") {
-    return res.status(400).send("Invalid File ID.");
+    return renderError(res, 400, "Invalid File ID.");
   }
 
   try {
     const shareLink = await findShareLinkByToken(token);
     if (!shareLink) {
-      return res.status(404).send("Share link not found.");
+      return renderError(res, 404, "Share link not found.");
     }
     if (shareLink.expiresAt < new Date()) {
-      return res.status(410).send("This link has expired.");
+      return renderError(res, 410, "This link has expired.");
     }
 
     const file = await findFileById(fileId);
     if (!file) {
-      return res.status(404).send("File not found.");
+      return renderError(res, 404, "File not found.");
     }
     if (!file.folderId) {
-      return res.status(403).send("You do not have access to this file.");
+      return renderError(res, 403, "You do not have access to this file.");
     }
 
     const isAllowed = await isDescendantOf(file.folderId, shareLink.folderId);
     if (!isAllowed) {
-      return res.status(403).send("You do not have access to this file.");
+      return renderError(res, 403, "You do not have access to this file.");
     }
 
     const extension = path.extname(file.name);

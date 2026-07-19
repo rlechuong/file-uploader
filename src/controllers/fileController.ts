@@ -4,14 +4,15 @@ import path from "node:path";
 import { createFile, deleteFile, findFileById } from "../queries/fileQueries.js";
 import { formatDate, formatFileSize, sanitizeForUrl } from "../utils/formatters.js";
 import { cloudinary, streamUpload } from "../config/cloudinary.js";
+import { renderError } from "../utils/errors.js";
 
 const postFileUpload = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
-    return res.status(401).send("Not authenticated");
+    return renderError(res, 401, "Not authenticated.");
   }
 
   if (!req.file) {
-    return res.status(400).send("File upload failed.");
+    return renderError(res, 400, "File upload failed.");
   }
 
   const folderId = typeof req.params.id === "string" ? req.params.id : null;
@@ -41,22 +42,22 @@ const postFileUpload = async (req: Request, res: Response, next: NextFunction) =
 
 const getFile = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
-    return res.status(401).send("Not authenticated.");
+    return renderError(res, 401, "Not authenticated.");
   }
 
   const fileId = req.params.id;
   if (typeof fileId !== "string") {
-    return res.status(400).send("Invalid File ID.");
+    return renderError(res, 400, "Invalid File ID.");
   }
 
   try {
     const file = await findFileById(fileId);
     if (!file) {
-      return res.status(404).send("File not found.");
+      return renderError(res, 404, "File not found.");
     }
 
     if (file.userId !== req.user.id) {
-      return res.status(403).send("You do not have access to this file.");
+      return renderError(res, 403, "You do not have access to this file.");
     }
 
     return res.render("file", {
@@ -72,22 +73,22 @@ const getFile = async (req: Request, res: Response, next: NextFunction) => {
 
 const getFileDownload = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
-    return res.status(401).send("Not authenticated.");
+    return renderError(res, 401, "Not authenticated.");
   }
 
   const fileId = req.params.id;
   if (typeof fileId !== "string") {
-    return res.status(400).send("Invalid File ID.");
+    return renderError(res, 400, "Invalid File ID.");
   }
 
   try {
     const file = await findFileById(fileId);
     if (!file) {
-      return res.status(404).send("File not found.");
+      return renderError(res, 404, "File not found.");
     }
 
     if (file.userId !== req.user.id) {
-      return res.status(403).send("You do not have access to this file.");
+      return renderError(res, 403, "You do not have access to this file.");
     }
 
     const extension = path.extname(file.name);
@@ -107,22 +108,22 @@ const getFileDownload = async (req: Request, res: Response, next: NextFunction) 
 
 const postDeleteFile = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
-    return res.status(401).send("Not authenticated.");
+    return renderError(res, 401, "Not authenticated.");
   }
 
   const fileId = req.params.id;
   if (typeof fileId !== "string") {
-    return res.status(400).send("Invalid File ID.");
+    return renderError(res, 400, "Invalid File ID.");
   }
 
   try {
     const file = await findFileById(fileId);
     if (!file) {
-      return res.status(404).send("File not found.");
+      return renderError(res, 404, "File not found.");
     }
 
     if (file.userId !== req.user.id) {
-      return res.status(403).send("You do not have access to this file.");
+      return renderError(res, 403, "You do not have access to this file.");
     }
 
     await deleteFile(fileId);

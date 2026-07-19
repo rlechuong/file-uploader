@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import multer from "multer";
+import { renderError } from "../utils/errors.js";
 
 const errorHandler = (err: unknown, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
@@ -28,7 +29,7 @@ const errorHandler = (err: unknown, req: Request, res: Response, next: NextFunct
     });
   }
 
-  return res.status(500).send("Something went wrong.");
+  return renderError(res, 500, "Something went wrong.");
 };
 
 export { errorHandler };

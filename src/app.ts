@@ -10,6 +10,7 @@ import { folderRouter } from "./routes/folderRoutes.js";
 import { fileRouter } from "./routes/fileRoutes.js";
 import { shareLinkRouter } from "./routes/shareLinkRoutes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { renderError } from "./utils/errors.js";
 
 import "./config/passport.js";
 
@@ -59,6 +60,10 @@ app.use("/", shareLinkRouter);
 
 app.get("/", (req, res) => {
   res.redirect("/folders");
+});
+
+app.use((req, res) => {
+  renderError(res, 404, "Page not found.");
 });
 
 app.use(errorHandler);
