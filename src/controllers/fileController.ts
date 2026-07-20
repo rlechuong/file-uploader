@@ -21,10 +21,22 @@ const postFileUpload = async (req: Request, res: Response, next: NextFunction) =
   try {
     const uploadResult = await streamUpload(req.file.buffer);
 
+    let storageKey = uploadResult.public_id;
+
+    if (uploadResult.resource_type === "raw") {
+      const extension = path.extname(req.file.originalname);
+      const renameResult = await cloudinary.uploader.rename(
+        uploadResult.public_id,
+        `${uploadResult.public_id}${extension}`,
+        { invalidate: true, resource_type: "raw" },
+      );
+      storageKey = renameResult.public_id;
+    }
+
     const fileData = {
       id: fileId,
       name: req.file.originalname,
-      storageKey: uploadResult.public_id,
+      storageKey,
       mimeType: req.file.mimetype,
       resourceType: uploadResult.resource_type,
       size: BigInt(req.file.size),
