@@ -1,5 +1,7 @@
 import { prisma } from "../config/prisma.js";
 
+type FolderPathSegment = { id: string; name: string };
+
 const createFolder = async (name: string, userId: string, parentId?: string | null) => {
   const folder = await prisma.folder.create({
     data: {
@@ -92,6 +94,22 @@ const isDescendantOf = async (folderId: string, ancestorId: string): Promise<boo
   return false;
 };
 
+const getFolderPath = async (folderId: string): Promise<FolderPathSegment[]> => {
+  const path: FolderPathSegment[] = [];
+  let currentFolderId: string | null = folderId;
+
+  while (currentFolderId !== null) {
+    const currentFolder = await findFolderById(currentFolderId);
+    if (!currentFolder) {
+      break;
+    }
+    path.unshift({ id: currentFolder.id, name: currentFolder.name });
+    currentFolderId = currentFolder.parentId;
+  }
+
+  return path;
+};
+
 export {
   createFolder,
   findFolderById,
@@ -101,4 +119,5 @@ export {
   updateFolder,
   deleteFolder,
   isDescendantOf,
+  getFolderPath,
 };

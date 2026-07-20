@@ -7,6 +7,7 @@ import {
   findRootFolderContents,
   updateFolder,
   deleteFolder,
+  getFolderPath,
 } from "../queries/folderQueries.js";
 import { renderError } from "../utils/errors.js";
 
@@ -40,11 +41,13 @@ const renderFolderView = async (
         return renderError(res, 403, "You do not have access to this folder.");
       }
 
-      return res.render("folders", { folder, allErrors, shareLink });
+      const folderPath = await getFolderPath(folder.id);
+
+      return res.render("folders", { folder, allErrors, shareLink, folderPath });
     }
 
     const folder = await findRootFolderContents(req.user.id);
-    return res.render("folders", { folder, allErrors, shareLink });
+    return res.render("folders", { folder, allErrors, shareLink, folderPath: [] });
   } catch (err) {
     return next(err);
   }

@@ -1,5 +1,17 @@
 <%- include("partials/header.ejs") %>
 
+<nav aria-label="Breadcrumb">
+  <a href="/folders">Home</a>
+  <% folderPath.forEach((crumb, index) => { %>
+    &gt;
+    <% if (index === folderPath.length - 1) { %>
+      <%= crumb.name %>
+    <% } else { %>
+      <a href="/folders/<%= crumb.id %>"><%= crumb.name %></a>
+    <% } %>
+  <% }) %>
+</nav>
+
 <% if (allErrors.length > 0) { %>
   <ul>
     <% allErrors.forEach(error => { %>
