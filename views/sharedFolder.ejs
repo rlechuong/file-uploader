@@ -6,7 +6,7 @@
       &gt;
     <% } %>
     <% if (index === folderPath.length - 1) { %>
-      <%= crumb.name %>
+      <span><%= crumb.name %></span>
     <% } else { %>
       <a href="/shared/<%= sharedToken %>/<%= crumb.id %>"><%= crumb.name %></a>
     <% } %>
