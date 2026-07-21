@@ -1,27 +1,40 @@
 <%- include("partials/header.ejs") %>
 
+<nav aria-label="Breadcrumb">
+  <% folderPath.forEach((crumb, index) => { %>
+    <% if (index > 0) { %> 
+      &gt;
+    <% } %>
+    <% if (index === folderPath.length - 1) { %>
+      <%= crumb.name %>
+    <% } else { %>
+      <a href="/shared/<%= sharedToken %>/<%= crumb.id %>"><%= crumb.name %></a>
+    <% } %>
+  <% }) %>
+</nav>
+
 <h2><%= folder.name %></h2>
 
 <h3>Folders</h3>
-<ul>
+<ul class="entry-list">
 <% folder.subfolders.forEach(subfolder => { %>
   <li>
-    <a href="/shared/<%= sharedToken %>/<%= subfolder.id %>"><%= subfolder.name %></a>
+    <a href="/shared/<%= sharedToken %>/<%= subfolder.id %>">📁 <%= subfolder.name %></a>
   </li>
 <% }) %>
 </ul>
 
 <h3>Files</h3>
-<ul>
+<ul class="entry-list">
 <% folder.files.forEach(file => { %>
   <li>
-    <a href="/shared/<%= sharedToken %>/files/<%= file.id %>/download"><%= file.name %></a>
+    <a href="/shared/<%= sharedToken %>/files/<%= file.id %>/download">📄 <%= file.name %></a>
   </li>
 <% }) %>
 </ul>
 
 <% if (folder.id !== sharedRootFolderId) { %>
-  <a href="/shared/<%= sharedToken %>/<%= folder.parentId %>">Back</a>
+  <a href="/shared/<%= sharedToken %>/<%= folder.parentId %>" class="link-back">Back</a>
 <% } %>
 
 <%- include("partials/footer.ejs") %>

@@ -2,18 +2,22 @@
 
 <h2><%= file.name %></h2>
 
-<p>Size: <%= formattedSize %></p>
-<p>Type: <%= file.mimeType %></p>
-<p>Uploaded: <%= formattedCreatedDate %></p>
-<p>Updated: <%= formattedUpdatedDate %></p>
+<div class="file-meta">
+  <p><strong>Size:</strong> <%= formattedSize %></p>
+  <p><strong>Type:</strong> <%= file.mimeType %></p>
+  <p><strong>Uploaded:</strong> <%= formattedCreatedDate %></p>
+  <p><strong>Updated:</strong> <%= formattedUpdatedDate %></p>
+</div>
 
-<a href="/files/<%= file.id %>/download">Download</a>
+<div class="file-actions">
+  <a href="/files/<%= file.id %>/download" class="btn">Download</a>
 
-<form action="/files/<%= file.id %>/delete" method="POST"
-  onsubmit="return confirm(`Delete this file?`)">
-  <button type="submit">Delete File</button>
-</form>
+  <form action="/files/<%= file.id %>/delete" method="POST"
+    onsubmit="return confirm(`Delete this file?`)">
+    <button type="submit" class="btn btn--danger">Delete File</button>
+  </form>
+</div>
 
-<a href="<%= file.folderId ? `/folders/${file.folderId}` : `/folders` %>">Back</a>
+<a href="<%= file.folderId ? `/folders/${file.folderId}` : `/folders` %>" class="link-back">Back</a>
 
 <%- include("partials/footer.ejs") %>

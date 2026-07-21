@@ -1,25 +1,27 @@
 <%- include("partials/header.ejs") %>
 
-<h1>Log In</h1>
+<div class="auth-page">
+  <div>
+    <h1>Log In</h1>
 
-<% if (errors.length > 0) { %>
-  <ul>
-    <% errors.forEach(error => { %>
-      <li><%= error %></li>
-    <% }) %>
-  </ul>
-<% } %>
+    <% if (errors.length > 0) { %>
+      <ul class="error-list">
+        <% errors.forEach(error => { %>
+          <li><%= error %></li>
+        <% }) %>
+      </ul>
+    <% } %>
 
-<form action="/login" method="POST">
-  <label for="email">Email</label>
-  <input id="email" name="email" type="email" value="<%= formData.email || '' %>" required />
+    <form action="/login" method="POST" class="auth-form">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" value="<%= formData.email || '' %>" required />
 
-  <label for="password">Password</label>
-  <input id="password" name="password" type="password" required />
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required />
 
-  <button type="submit">Log In</button>
-</form>
-
-<a href="/">Home</a>
+      <button type="submit" class="btn">Log In</button>
+    </form>
+  </div>
+</div>
 
 <%- include("partials/footer.ejs") %>

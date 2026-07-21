@@ -4,23 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>File Uploader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css" />
     <script src="/js/main.js" defer></script>
   </head>
   <body>
-    <header>
-      <a href="/">File Uploader</a>
-      <nav aria-label="Site">
-        <ul>
+    <header class="site-header">
+      <a href="/" class="site-logo">File Uploader</a>
+      <nav aria-label="Site" class="site-nav">
+        <ul class="nav-list">
           <% if (user) { %>
             <li>
               <form action="/logout" method="POST">
-                <button type="submit">Log Out</button>
+                <button type="submit" class="nav-link nav-link--button">Log Out</button>
               </form>
             </li>
           <% } else { %>
-            <li><a href="/login">Log In</a></li>
-            <li><a href="/signup">Sign Up</a></li>
+            <li><a href="/login" class="nav-link">Log In</a></li>
+            <li><a href="/signup" class="nav-link">Sign Up</a></li>
           <% } %>
         </ul>
       </nav>

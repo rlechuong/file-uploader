@@ -5,7 +5,7 @@
   <% folderPath.forEach((crumb, index) => { %>
     &gt;
     <% if (index === folderPath.length - 1) { %>
-      <%= crumb.name %>
+      <span><%= crumb.name %></span>
     <% } else { %>
       <a href="/folders/<%= crumb.id %>"><%= crumb.name %></a>
     <% } %>
@@ -13,14 +13,31 @@
 </nav>
 
 <% if (allErrors.length > 0) { %>
-  <ul>
+  <ul class="error-list">
     <% allErrors.forEach(error => { %>
       <li><%= error.msg %></li>
     <% }) %>
   </ul>
 <% } %>
 
-<button data-action="open-create">New Folder</button>
+<div class="folder-header">
+  <h2><%= folder.id ? folder.name : "Root" %></h2>
+  <% if (folder.id) { %>
+    <div class="folder-actions">
+      <button data-action="open-rename" class="btn btn--secondary">Rename Folder</button>
+      <button data-action="open-share" class="btn btn--secondary">Share Folder</button>
+      <form action="/folders/<%= folder.id %>/delete" method="POST" 
+        onsubmit="return confirm('Delete this folder and everything inside of it?')">
+        <button type="submit" class="btn btn--danger">Delete Folder</button>
+      </form>
+    </div>
+  <% } %>
+</div>
+
+<div class="folder-toolbar">
+  <button data-action="open-create" class="btn">New Folder</button>
+  <button data-action="open-upload" class="btn">Upload File</button>
+</div>
 
 <dialog id="createDialog">
   <form action="<%= folder.id ? `/folders/${folder.id}/folders` : `/folders` %>" method="POST">
@@ -28,12 +45,12 @@
     <label for="create-name">Folder Name</label>
     <input id="create-name" name="name" type="text" required />
 
-    <button type="submit">Create</button>
-    <button type="button" data-action="cancel-create">Cancel</button>
+    <div class="dialog-actions">
+      <button type="submit" class="btn">Create</button>
+      <button type="button" data-action="cancel-create" class="btn btn--secondary">Cancel</button>
+    </div>
   </form>
 </dialog>
-
-<button data-action="open-upload">Upload File</button>
 
 <dialog id="uploadDialog">
   <form action="<%= folder.id ? `/folders/${folder.id}/files` : `/files` %>" method="POST" 
@@ -41,22 +58,13 @@
     <h3>Upload File</h3>
     <label for="file">Upload File</label>
     <input id="file" name="file" type="file" required />
-    <button type="submit">Upload</button>
-    <button type="button" data-action="cancel-upload">Cancel</button>
+
+    <div class="dialog-actions">
+      <button type="submit" class="btn">Upload</button>
+      <button type="button" data-action="cancel-upload" class="btn btn--secondary">Cancel</button>
+    </div>
   </form>
 </dialog>
-
-<% if (folder.id) { %>
-  <h2><%= folder.name %></h2>
-  <button data-action="open-rename">Rename Folder</button>
-  <button data-action="open-share">Share Folder</button>
-  <form action="/folders/<%= folder.id %>/delete" method="POST" 
-    onsubmit="return confirm('Delete this folder and everything inside of it?')">
-    <button type="submit">Delete Folder</button>
-  </form>
-<% } else { %>
-  <h2>Root</h2>
-<% } %>
 
 <% if (folder.id) { %>
   <dialog id="renameDialog">
@@ -65,8 +73,10 @@
       <label for="rename-name">Folder Name</label>
       <input id="rename-name" name="name" type="text" value="<%= folder.name %>" required />
 
-      <button type="submit">Save</button>
-      <button type="button" data-action="cancel-rename">Cancel</button>
+      <div class="dialog-actions">
+        <button type="submit" class="btn">Save</button>
+        <button type="button" data-action="cancel-rename" class="btn btn--secondary">Cancel</button>
+      </div>
     </form>
   </dialog>
 <% } %>
@@ -82,36 +92,41 @@
         <option value="1w">1 Week</option>
       </select>
 
-      <button type="submit">Create Link</button>
-      <button type="button" data-action="cancel-share">Cancel</button>
+      <div class="dialog-actions">
+        <button type="submit" class="btn">Create Link</button>
+        <button type="button" data-action="cancel-share" class="btn btn--secondary">Cancel</button>
+      </div>
     </form>
 
     <% if (shareLink) { %>
-      <p>Share Link: <a href="/shared/<%= shareLink.token %>"><%= shareLink.token %></a></p>
+      <div class="share-link-result">
+        <p>Share This Link</p>
+        <a href="/shared/<%= shareLink.token %>"><%= shareLink.token %></a>
+      </div>
     <% } %>
   </dialog>
 <% } %>
 
 <h3>Folders</h3>
-<ul>
+<ul class="entry-list">
 <% folder.subfolders.forEach(subfolder => { %>
   <li>
-    <a href="/folders/<%= subfolder.id %>"><%= subfolder.name %></a>
+    <a href="/folders/<%= subfolder.id %>">📁 <%= subfolder.name %></a>
   </li>
 <% }) %>
 </ul>
 
 <h3>Files</h3>
-<ul>
+<ul class="entry-list">
 <% folder.files.forEach(file => { %>
   <li>
-    <a href="/files/<%= file.id %>"><%= file.name %></a>
+    <a href="/files/<%= file.id %>">📄 <%= file.name %></a>
   </li>
 <% }) %>
 </ul>
 
 <% if (folder.id) { %>
-  <a href="<%= folder.parentId ? `/folders/${folder.parentId}` : '/folders' %>">Back</a>
+  <a href="<%= folder.parentId ? `/folders/${folder.parentId}` : '/folders' %>" class="link-back">Back</a>
 <% } %>
 
 <%- include("partials/footer.ejs") %>

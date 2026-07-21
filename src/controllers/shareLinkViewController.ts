@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import path from "node:path";
 import { findShareLinkByToken } from "../queries/shareLinkQueries.js";
-import { findFolderAndContents, isDescendantOf } from "../queries/folderQueries.js";
+import { findFolderAndContents, isDescendantOf, getFolderPath } from "../queries/folderQueries.js";
 import { findFileById } from "../queries/fileQueries.js";
 import { sanitizeForUrl } from "../utils/formatters.js";
 import { cloudinary } from "../config/cloudinary.js";
@@ -37,10 +37,16 @@ const getSharedView = async (req: Request, res: Response, next: NextFunction) =>
     if (!folder) {
       return renderError(res, 404, "Folder not found.");
     }
+
+    const fullPath = await getFolderPath(folder.id);
+    const shareRootIndex = fullPath.findIndex((crumb) => crumb.id === shareLink.folderId);
+    const folderPath = fullPath.slice(shareRootIndex);
+
     return res.render("sharedFolder", {
       folder,
       sharedToken: token,
       sharedRootFolderId: shareLink.folderId,
+      folderPath,
     });
   } catch (err) {
     return next(err);
