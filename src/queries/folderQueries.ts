@@ -110,6 +110,28 @@ const getFolderPath = async (folderId: string): Promise<FolderPathSegment[]> => 
   return path;
 };
 
+type FolderAndContents = NonNullable<Awaited<ReturnType<typeof findFolderAndContents>>>;
+type FileRow = FolderAndContents["files"][number];
+type FileForDeletion = Pick<FileRow, "storageKey" | "resourceType">;
+
+const getAllFilesInFolder = async (folderId: string): Promise<FileForDeletion[]> => {
+  const folder = await findFolderAndContents(folderId);
+  if (!folder) {
+    return [];
+  }
+
+  let allFiles: FileForDeletion[] = folder.files.map((file) => {
+    return { storageKey: file.storageKey, resourceType: file.resourceType };
+  });
+
+  for (const subFolder of folder.subfolders) {
+    const nestedFiles = await getAllFilesInFolder(subFolder.id);
+    allFiles = [...allFiles, ...nestedFiles];
+  }
+
+  return allFiles;
+};
+
 export {
   createFolder,
   findFolderById,
@@ -120,4 +142,5 @@ export {
   deleteFolder,
   isDescendantOf,
   getFolderPath,
+  getAllFilesInFolder,
 };

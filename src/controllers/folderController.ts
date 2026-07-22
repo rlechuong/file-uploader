@@ -8,8 +8,10 @@ import {
   updateFolder,
   deleteFolder,
   getFolderPath,
+  getAllFilesInFolder,
 } from "../queries/folderQueries.js";
 import { renderError } from "../utils/errors.js";
+import { cloudinary } from "../config/cloudinary.js";
 
 const renderFolderView = async (
   req: Request,
@@ -128,7 +130,6 @@ const postDeleteFolder = async (req: Request, res: Response, next: NextFunction)
 
   try {
     const folder = await findFolderById(folderId);
-
     if (!folder) {
       return renderError(res, 404, "Folder not found.");
     }
@@ -137,7 +138,18 @@ const postDeleteFolder = async (req: Request, res: Response, next: NextFunction)
       return renderError(res, 403, "You do not have access to this folder.");
     }
 
+    const allFilesInfo = await getAllFilesInFolder(folder.id);
+
+    const deletePromises = allFilesInfo.map((fileInfo) =>
+      cloudinary.uploader.destroy(fileInfo.storageKey, {
+        resource_type: fileInfo.resourceType,
+      }),
+    );
+
+    await Promise.all(deletePromises);
+
     await deleteFolder(folderId);
+
     return res.redirect(folder.parentId ? `/folders/${folder.parentId}` : "/folders");
   } catch (err) {
     return next(err);
