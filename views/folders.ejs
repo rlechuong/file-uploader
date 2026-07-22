@@ -101,7 +101,10 @@
     <% if (shareLink) { %>
       <div class="share-link-result">
         <p>Share This Link</p>
-        <a href="/shared/<%= shareLink.token %>"><%= shareLink.token %></a>
+        <div class="share-link-row">
+          <input type="text" id="shareLinkUrl" value="/shared/<%= shareLink.token %>" readonly />
+          <button type="button" id="copyShareLink" class="btn btn--secondary">Copy Link</button>
+        </div>
       </div>
     <% } %>
   </dialog>
