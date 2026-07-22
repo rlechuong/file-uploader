@@ -369,6 +369,7 @@ dialog .btn--secondary:hover {
   margin-bottom: var(--spacing-lg);
   padding-bottom: var(--spacing-md);
   border-bottom: 1px solid var(--color-border);
+  min-height: 60px;
 }
 
 .folder-header h2 {
